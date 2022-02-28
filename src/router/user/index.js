@@ -79,7 +79,7 @@ router.post('/', async ctx => {
   }
 });
 
-// 注册
+// 注册 TODO 这是要验证具体 email name 的正确性
 router.post('/register', async ctx => {
   const body = ctx.request.body;
   const validField = ['userName', 'password', 'userEmail', 'code'];
@@ -87,7 +87,6 @@ router.post('/register', async ctx => {
   try {
     ctx.validField(validField, body);
     const emailInfo = await emailSchema.findOne({ email: body.userEmail });
-    console.log(emailInfo, 33333);
 
     if (emailInfo && emailInfo.code === body.code) {
       const user = await userSchema.findOne({ userName: body.userName });
@@ -115,25 +114,23 @@ router.post('/register', async ctx => {
 // TODO 忘记密码
 router.post('/forget', async ctx => {
   const body = ctx.request.body;
-  const validField = ['userName', 'password', 'newPassword'];
+  const validField = ['userEmail', 'password', 'newPassword', 'code'];
+  const emailInfo = await emailSchema.findOne({ email: body.userEmail });
 
   try {
     ctx.validField(validField, body);
-    const user = await userSchema.updateOne(
-      { username: body.username },
-      { password: body.password }
-    );
-    // const user = await userSchema.findOne({ username: body.username });
-    console.log(user, 'user');
-    if (!user) {
-      return ctx.success('账号或密码不正确');
+    if (emailInfo && emailInfo.code === body.code) {
+      const user = await userSchema.findOne({ useremail: body.useremail });
+      if (user) {
+        await emailSchema.updateOne({ email: body.userEmail }, { code: '' });
+        await userSchema.updateOne({ userEmail: body.userEmail }, { password: body.password });
+        ctx.success('修改密码成功');
+      } else {
+        return ctx.fail('没有此用户');
+      }
+    } else {
+      ctx.fail('请填入正确的验正码');
     }
-    if (user.password !== body.password) {
-      return ctx.success('原密码不正确');
-    }
-
-    // await user.update({ password: body.newPassword });
-    ctx.success('修改密码成功');
   } catch (err) {
     ctx.fail(err.message);
   }
