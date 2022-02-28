@@ -19,6 +19,7 @@
     "koa-xml-body": "^2.2.0",
     "koa2-formidable": "^1.0.2",
     "mongoose": "^5.10.11",
+    "nodemailer": "4.0.1",
     "qiniu": "^7.3.2",
     "request": "^2.88.2",
     "request-promise": "^4.2.6",

@@ -31,10 +31,12 @@ export default {
   },
 
   emailServer: {
-    service: 'qq',
-    auth: {
-      user: '771001201@qq.com',
-      pass: 'whfgkjkcjhbwbfih'
-    }
+  service: 'SMTP',
+  host: 'smtp.qq.com',
+  port: 465,
+  auth: {
+    user: '329337249@qq.com',
+    pass: 'jsplybyxzuwpcabb' // 邮箱授权码
   }
+},
 }
