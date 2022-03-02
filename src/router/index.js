@@ -2,7 +2,7 @@ import Router from 'koa-router';
 import util from '../util/index.js';
 const router = new Router();
 
-const modules = ['user', 'qiniu', 'wechatEvent', 'emailVerify'];
+const modules = ['user', 'qiniu', 'wechatEvent', 'emailVerify', 'prize'];
 const wechat = ['member', 'department', 'tags', 'customer', 'wxapi', 'test'];
 
 util.$eatch(modules, async item => {
