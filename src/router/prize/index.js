@@ -34,4 +34,24 @@ router.get('/checkIp', async ctx => {
   ctx.success('fdsaf');
 });
 
+router.post('/upload', async ctx => {
+  const body = ctx.request.body;
+  const validField = [
+    'prize_name',
+    'prize_num',
+    'remain_num',
+    'prize_ratio',
+    'time_begin',
+    'time_end',
+    'img',
+    'type'
+  ];
+  try {
+    ctx.validField(validField, body);
+
+    ctx.success(body);
+  } catch (err) {
+    ctx.fail(err.message);
+  }
+});
 export default router.routes();

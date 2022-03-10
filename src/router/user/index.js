@@ -27,7 +27,6 @@ async function sendEmail(email, title, text) {
 const router = new Router();
 
 router.use(async (ctx, next) => {
-  // ctx.logger = ctx.logger({service: 'user'})
   await next();
 });
 
@@ -46,7 +45,6 @@ router.post('/sendEmailVerify', async ctx => {
     }
     // await sendEmail('771001201@qq.com', '测试', `欢迎你的到来，你好啊`);
   } catch (err) {
-    // ctx.logger.log({ level: 'error', message: err.message });
     ctx.fail(err.message);
   }
 });
@@ -74,7 +72,6 @@ router.post('/', async ctx => {
 
     ctx.success(user);
   } catch (err) {
-    // ctx.logger.log({ level: 'error', message: err.message });
     ctx.fail(err.message);
   }
 });
@@ -106,7 +103,6 @@ router.post('/register', async ctx => {
       ctx.fail('请填入正确的验正码');
     }
   } catch (err) {
-    // ctx.logger.log({ level: 'error', message: err.message });
     ctx.fail(err.message);
   }
 });
