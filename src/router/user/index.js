@@ -1,53 +1,8 @@
 import Router from 'koa-router';
 import jwt from 'jsonwebtoken';
-import nodemailer from 'nodemailer';
 import userSchema from '../../models/user/index.js';
 import emailSchema from '../../models/emailVerify/index.js';
-import config from '../../config/index.js';
-
-async function sendEmail(email, title, text) {
-  return new Promise((resolve, reject) => {
-    const transporter = nodemailer.createTransport(config.emailServer, {
-      from: '<' + config.emailServer.auth.user + '>'
-    });
-    transporter.sendMail(
-      {
-        to: email,
-        subject: title,
-        text
-      },
-      (error, info) => {
-        transporter.close();
-        error && console.log('发邮件错误：', error.message);
-        resolve(error ? error.message : '');
-      }
-    );
-  });
-}
 const router = new Router();
-
-router.use(async (ctx, next) => {
-  await next();
-});
-
-router.post('/sendEmailVerify', async ctx => {
-  const body = ctx.request.body;
-  const validField = ['userEmail'];
-  try {
-    ctx.validField(validField, body);
-
-    const emailInfo = await emailSchema.findOne({ email: body.email });
-    if (emailInfo.code === body.code) {
-      await userSchema.updateOne({ userEmail: body.userEmail }, { code });
-      ctx.success('注册成功');
-    } else {
-      ctx.fail('请填入正确的验正码');
-    }
-    // await sendEmail('771001201@qq.com', '测试', `欢迎你的到来，你好啊`);
-  } catch (err) {
-    ctx.fail(err.message);
-  }
-});
 
 router.get('/', async ctx => {
   const users = await userSchema.find().exec();
@@ -57,12 +12,12 @@ router.get('/', async ctx => {
 // 登录
 router.post('/', async ctx => {
   const body = ctx.request.body;
-  const validField = ['userName', 'password'];
+  const validField = ['name', 'password'];
 
   try {
     ctx.validField(validField, body);
 
-    const user = await userSchema.findOne({ userName: body.userName });
+    const user = await userSchema.findOne({ name: body.name });
     if (!user) {
       return ctx.success('此账号没有注册');
     }
@@ -79,19 +34,19 @@ router.post('/', async ctx => {
 // 注册 TODO 这是要验证具体 email name 的正确性
 router.post('/register', async ctx => {
   const body = ctx.request.body;
-  const validField = ['userName', 'password', 'userEmail', 'code'];
+  const validField = ['password', 'email', 'code'];
 
   try {
     ctx.validField(validField, body);
-    const emailInfo = await emailSchema.findOne({ email: body.userEmail });
+    const emailInfo = await emailSchema.findOne({ email: body.email });
 
     if (emailInfo && emailInfo.code === body.code) {
-      const user = await userSchema.findOne({ userName: body.userName });
+      const user = await userSchema.findOne({ name: body.name });
 
-      if (user && user.userName === body.userName) {
+      if (user && user.name === body.name) {
         return ctx.fail('此用户名已注册');
       }
-      await emailSchema.updateOne({ email: body.userEmail }, { code: '' });
+      await emailSchema.updateOne({ email: body.email }, { code: '' });
 
       const data = {
         ...body,
@@ -110,16 +65,16 @@ router.post('/register', async ctx => {
 // TODO 忘记密码
 router.post('/forget', async ctx => {
   const body = ctx.request.body;
-  const validField = ['userEmail', 'password', 'newPassword', 'code'];
-  const emailInfo = await emailSchema.findOne({ email: body.userEmail });
+  const validField = ['email', 'password', 'newPassword', 'code'];
+  const emailInfo = await emailSchema.findOne({ email: body.email });
 
   try {
     ctx.validField(validField, body);
     if (emailInfo && emailInfo.code === body.code) {
-      const user = await userSchema.findOne({ useremail: body.useremail });
+      const user = await userSchema.findOne({ email: body.email });
       if (user) {
-        await emailSchema.updateOne({ email: body.userEmail }, { code: '' });
-        await userSchema.updateOne({ userEmail: body.userEmail }, { password: body.password });
+        await emailSchema.updateOne({ email: body.email }, { code: '' });
+        await userSchema.updateOne({ email: body.email }, { password: body.password });
         ctx.success('修改密码成功');
       } else {
         return ctx.fail('没有此用户');
@@ -135,15 +90,15 @@ router.post('/forget', async ctx => {
 // 修改密码 一般不用单独写，走忘记密码
 // router.post('/edit', async ctx => {
 //   const body = ctx.request.body;
-//   const validField = ['userName', 'password', 'newPassword'];
+//   const validField = ['name', 'password', 'newPassword'];
 
 //   try {
 //     ctx.validField(validField, body);
 //     const user = await userSchema.updateOne(
-//       { username: body.username },
+//       { name: body.name },
 //       { password: body.password }
 //     );
-//     // const user = await userSchema.findOne({ username: body.username });
+//     // const user = await userSchema.findOne({ name: body.name });
 //     console.log(user, 'user');
 //     if (!user) {
 //       return ctx.success('账号或密码不正确');
@@ -164,7 +119,7 @@ router.post('/forget', async ctx => {
 // router.post('/logout', async ctx => {
 //   try {
 //     const data = await ctx.verify(ctx);
-//     await userSchema.deleteOne({ username: data.username });
+//     await userSchema.deleteOne({ name: data.name });
 //     ctx.success('退出成功');
 //   } catch (err) {
 //     ctx.fail(err.message);
