@@ -20,7 +20,7 @@ router.get('/allMemberTest', async (ctx, next) => {
 
   try {
     // TODU 这里要优化， 重复的数据插入不了   ordered = false 就是让插入过的不再插入
-    const res = await memberList.insertMany(data.userlist, {ordered: false});
+    const res = await memberList.insertMany(data.userlist, { ordered: false });
     ctx.success(res);
   } catch (err) {
     ctx.success(err);
@@ -36,7 +36,7 @@ router.get('/department', async (ctx, next) => {
 
   try {
     // TODU 这里要优化， 重复的数据插入不了
-    const res = await memberList.insertMany(data.userlist, {ordered: false});
+    const res = await memberList.insertMany(data.userlist, { ordered: false });
     ctx.success(res);
   } catch (err) {
     ctx.success(err);
@@ -52,7 +52,7 @@ router.get('/departmentlist', async (ctx, next) => {
   data.department.map(item => {
     item._id = item.id;
     return item;
-  })
+  });
   try {
     // TODU 这里要优化， 重复的数据插入不了
     const res = await departmentList.insertMany(data.department);
@@ -61,7 +61,6 @@ router.get('/departmentlist', async (ctx, next) => {
     ctx.success(err);
   }
 });
-
 
 // 同步标签列表
 router.get('/taglist', async (ctx, next) => {
@@ -72,7 +71,7 @@ router.get('/taglist', async (ctx, next) => {
   data.taglist.map(item => {
     item._id = item.tagid;
     return item;
-  })
+  });
   try {
     // TODU 这里要优化， 重复的数据插入不了
     const res = await memberTags.insertMany(data.taglist);
@@ -96,13 +95,12 @@ router.get('/tag/:tagid', async (ctx, next) => {
 
   try {
     // TODU 这里要优化， 重复的数据插入不了
-    const res = await tagMemberList.update({_id: data._id}, data, {upsert: true});
+    const res = await tagMemberList.update({ _id: data._id }, data, { upsert: true });
     ctx.success(res);
   } catch (err) {
     ctx.success(err);
   }
 });
-
 
 /**
  * 客户的接口
@@ -117,7 +115,6 @@ router.get('/externalcontact/:userid', async (ctx, next) => {
   });
   delete data.errcode;
   delete data.errmsg;
-  console.log(data, 'dddddddddddddddddddddddddddd');
 
   try {
     // TODU 这里要优化， 重复的数据插入不了
@@ -130,8 +127,8 @@ router.get('/externalcontact/:userid', async (ctx, next) => {
 
 // 同步所以客户详情
 router.get('/allCustomerDetail', async (ctx, next) => {
-  const members = await memberList.find({}, {_id: 0, userid: 1});
-  
+  const members = await memberList.find({}, { _id: 0, userid: 1 });
+
   // TODO limit 写死的,后期写活
   let allCustomer = members.map(item => {
     return request({
@@ -147,16 +144,18 @@ router.get('/allCustomerDetail', async (ctx, next) => {
   allCustomer = await Promise.all(allCustomer);
 
   const obj = {};
-  ctx.$util.$eatch(allCustomer, (item) => {
-    ctx.$util.$eatch(item.external_contact_list, (customerItem) => {
+  allCustomer.forEach(item => {
+    item.external_contact_list.forEach(customerItem => {
       if (obj[customerItem.external_contact.external_userid]) {
-        obj[customerItem.external_contact.external_userid]['follow_user'].push(customerItem.follow_info);
+        obj[customerItem.external_contact.external_userid]['follow_user'].push(
+          customerItem.follow_info
+        );
       } else {
         customerItem['follow_user'] = [customerItem.follow_info];
         delete customerItem.follow_info;
         obj[customerItem.external_contact.external_userid] = customerItem;
       }
-    })
+    });
   });
   const data = Object.keys(obj).map(item => {
     obj[item]['_id'] = obj[item]['external_contact']['external_userid'];
@@ -165,7 +164,7 @@ router.get('/allCustomerDetail', async (ctx, next) => {
 
   try {
     // TODU 这里要优化， 重复的数据插入不了
-    const res = await customerDetails.insertMany(data, {ordered: false})
+    const res = await customerDetails.insertMany(data, { ordered: false });
     ctx.success(res);
   } catch (err) {
     ctx.success(err);
@@ -180,7 +179,7 @@ router.get('/customerDetail/:externalUserid', async (ctx, next) => {
     json: true
   });
 
-  const res = await customerDetails.updateOne({_id: externalUserid}, data, {upsert: true});
+  const res = await customerDetails.updateOne({ _id: externalUserid }, data, { upsert: true });
   ctx.success(res);
 });
 
@@ -190,12 +189,12 @@ router.get('/customerGroupDetail', async (ctx, next) => {
     url: `${ctx.$config.wechatBaseUrl}externalcontact/groupchat/list?access_token=${ctx.accessToken}`,
     method: 'post',
     body: {
-    status_filter: 0,
-    // owner_filter: {
-    //   userid_list: ['ZhuZhiPen']
-    // },
-    // cursor : "r9FqSqsI8fgNbHLHE5QoCP50UIg2cFQbfma3l2QsmwI",
-    limit : 10
+      status_filter: 0,
+      // owner_filter: {
+      //   userid_list: ['ZhuZhiPen']
+      // },
+      // cursor : "r9FqSqsI8fgNbHLHE5QoCP50UIg2cFQbfma3l2QsmwI",
+      limit: 10
     },
     json: true
   });
@@ -209,15 +208,15 @@ router.get('/customerGroupDetail', async (ctx, next) => {
       },
       json: true
     });
-  })
-  
+  });
+
   data = await Promise.all(data);
   data = data.map(item => {
     item.group_chat._id = item.group_chat.chat_id;
     return item.group_chat;
   });
 
-  const res = await customerGroupDetails.insertMany(data, {ordered: false});
+  const res = await customerGroupDetails.insertMany(data, { ordered: false });
   ctx.success(res);
 });
 
@@ -234,7 +233,9 @@ router.get('/customerGroupDetail/:chatId', async (ctx, next) => {
   });
   data.group_chat._id = data.group_chat.chat_id;
 
-  const res = await customerGroupDetails.updateOne({_id: chat_id}, data.group_chat, {upsert: true});
+  const res = await customerGroupDetails.updateOne({ _id: chat_id }, data.group_chat, {
+    upsert: true
+  });
   ctx.success(res);
 });
 
@@ -250,45 +251,41 @@ router.post('/customerCorpTags', async (ctx, next) => {
   });
 
   try {
-    const res = await customerCorpTags.insertMany(data.tag_group, {ordered: false});
+    const res = await customerCorpTags.insertMany(data.tag_group, { ordered: false });
     ctx.success(res);
   } catch (err) {
     ctx.success(err);
   }
 });
-router.post('/ddddd', async (ctx) => {
-  const ff= await b.test.aggregate(
-   [
-     { $group : { _id : "$author", books: { $push: "$title" } } }
-   ]
-);
+router.post('/ddddd', async ctx => {
+  const ff = await b.test.aggregate([{ $group: { _id: '$author', books: { $push: '$title' } } }]);
 });
 // 更新企业标签[可与上个接口提出来合并]
 router.post('/customerCorpTagsUpdate', async (ctx, next) => {
   //const body = ctx.request.body;
 
   //const data = await request({
-    //url: `${ctx.$config.wechatBaseUrl}externalcontact/get_corp_tag_list?access_token=${ctx.accessToken}`,
-    //method: 'post',
-    //body,
-    //json: true
+  //url: `${ctx.$config.wechatBaseUrl}externalcontact/get_corp_tag_list?access_token=${ctx.accessToken}`,
+  //method: 'post',
+  //body,
+  //json: true
   //});
   const data = {
     tag_group: [
       {
-        "group_id": "etE4KRCgAANe2_fRutV_8-ARI1z8ItPg",
-        "group_name": "55",
-        "create_time": 1614863999,
-        "tag": [
-            {
-                "id": "etE4KRCgAA0gWYmBL4ESm9-eu05G3d",
-                "name": "555555",
-                "create_time": 1614863999,
-                "order": 0
-            }
+        group_id: 'etE4KRCgAANe2_fRutV_8-ARI1z8ItPg',
+        group_name: '55',
+        create_time: 1614863999,
+        tag: [
+          {
+            id: 'etE4KRCgAA0gWYmBL4ESm9-eu05G3d',
+            name: '555555',
+            create_time: 1614863999,
+            order: 0
+          }
         ],
-        "order": 0,
-        "__v": 0
+        order: 0,
+        __v: 0
       }
     ]
   };
@@ -296,43 +293,42 @@ router.post('/customerCorpTagsUpdate', async (ctx, next) => {
 
   const item = data.tag_group[0];
   console.log(item.tag[0].id, '[[[[[');
-  
+
   try {
-     let res = await customerCorpTags.aggregate(
-       [
-         {
-           $match: { group_id: item.group_id }
-         },
-         {
-           $facet: {
-             ddddd: [
-               {
-                 $match: {
-                   'tag.id': {
-                     $ne: item.tag[0].id
-                   },
-                 },
-               },
-               {
-                 $set: {
-                   tag: {$concatArrays: ['$tag', [item.tag[0]]]} 
-                 }
-               }
-             ]
-           }
-         }
-       ]
-     );
+    let res = await customerCorpTags.aggregate([
+      {
+        $match: { group_id: item.group_id }
+      },
+      {
+        $facet: {
+          ddddd: [
+            {
+              $match: {
+                'tag.id': {
+                  $ne: item.tag[0].id
+                }
+              }
+            },
+            {
+              $set: {
+                tag: { $concatArrays: ['$tag', [item.tag[0]]] }
+              }
+            }
+          ]
+        }
+      }
+    ]);
     console.log(JSON.stringify(res[0]['ddddd'][0], null, 4));
-    res = await customerCorpTags.updateOne({group_id: item.group_id}, {$set: {tag: res[0]['ddddd'][0].tag}});
+    res = await customerCorpTags.updateOne(
+      { group_id: item.group_id },
+      { $set: { tag: res[0]['ddddd'][0].tag } }
+    );
     ctx.success(res);
   } catch (err) {
     console.log(err, 'errrrrrrrrr');
     ctx.success(err);
   }
 });
-
-
 
 // 获取成员二维码 (让客户添加)
 router.post('/memberQrCode', async (ctx, next) => {

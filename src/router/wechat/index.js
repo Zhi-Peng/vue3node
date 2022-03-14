@@ -9,9 +9,11 @@ const url = {
   // 获取用户信息
   user: 'user/get?access_token=ACCESS_TOKEN&userid=USERID',
   // 获取部门成员
-  userSimplelist: 'user/simplelist?access_token=ACCESS_TOKEN&department_id=DEPARTMENT_ID&fetch_child=FETCH_CHILD',
+  userSimplelist:
+    'user/simplelist?access_token=ACCESS_TOKEN&department_id=DEPARTMENT_ID&fetch_child=FETCH_CHILD',
   // 获取部门成员详情
-  userList: 'user/list?access_token=ACCESS_TOKEN&department_id=DEPARTMENT_ID&fetch_child=FETCH_CHILD',
+  userList:
+    'user/list?access_token=ACCESS_TOKEN&department_id=DEPARTMENT_ID&fetch_child=FETCH_CHILD',
   // 获取所有部门
   departmentList: 'department/list?access_token=',
   // 获取标签成员
@@ -24,7 +26,7 @@ const url = {
   messageSend: 'message/send?access_token=',
   // 应用推送消息
   appchatSend: 'appchat/send?access_token='
-}
+};
 
 router.get('/ticket', async (ctx, next) => {
   const token = await ctx.wechat.fetchAccessToken();
@@ -38,7 +40,7 @@ router.get('/', async (ctx, next) => {
     url: `${baseUrl}${url.departmentList}${token.access_token}`,
     json: true
   });
-  ctx.success(data)
+  ctx.success(data);
 });
 // 获取部门下的所有成员
 router.get('/simplelist/:id', async (ctx, next) => {
@@ -48,7 +50,7 @@ router.get('/simplelist/:id', async (ctx, next) => {
     url: `${baseUrl}user/simplelist?access_token=${token.access_token}&department_id=${params.id}&fetch_child=1`,
     json: true
   });
-  ctx.success(data)
+  ctx.success(data);
 });
 // 获取部门下的所有成员详情
 router.get('/user/list/:id', async (ctx, next) => {
@@ -58,9 +60,8 @@ router.get('/user/list/:id', async (ctx, next) => {
     url: `${baseUrl}user/list?access_token=${token.access_token}&department_id=${params.id}&fetch_child=1`,
     json: true
   });
-  ctx.success(data)
+  ctx.success(data);
 });
-
 
 // 获取用户信息 这里返回的只是用户 id 注意，用 id 才能拿信息
 router.get('/:code', async (ctx, next) => {
@@ -70,7 +71,7 @@ router.get('/:code', async (ctx, next) => {
     json: true
   });
   console.log(data, 'aaaaaaaaaaaaaaa');
-  ctx.success(data)
+  ctx.success(data);
 });
 // 获取客户群列表
 router.get('/externalcontact/groupchat', async (ctx, next) => {
@@ -80,12 +81,11 @@ router.get('/externalcontact/groupchat', async (ctx, next) => {
     json: true
   });
   console.log(data, 'aaaaaaaaaaaaaaa');
-  ctx.success(data)
+  ctx.success(data);
 });
 
 // 发送应用消息
 router.post(`/message/send`, async (ctx, next) => {
-  console.log(ctx.request.body, 'dddddddddddddddddddddffffff');
   const token = await ctx.wechat.fetchAccessToken();
   const data = await request({
     url: `${baseUrl}${url.messageSend}${token.access_token}`,
@@ -93,10 +93,8 @@ router.post(`/message/send`, async (ctx, next) => {
     body: ctx.request.body,
     json: true
   });
-  console.log(data, 'dddddddddddddd');
-  ctx.success(data)
+  ctx.success(data);
 });
-
 
 // 获取群聊会话
 router.get(`/appchat/message/:groupId`, async (ctx, next) => {
@@ -106,7 +104,7 @@ router.get(`/appchat/message/:groupId`, async (ctx, next) => {
     json: true
   });
   console.log(data, '8888888888888 wrE4KRCgAA_VGzAk4FlOA6J0MjsXPwoQ');
-  ctx.success(data)
+  ctx.success(data);
 });
 
 // 创建群聊会话
@@ -118,8 +116,7 @@ router.post(`/appchat/create`, async (ctx, next) => {
     body: ctx.request.body,
     json: true
   });
-  console.log(data, 'dddddddddddddd');
-  ctx.success(data)
+  ctx.success(data);
 });
 // 应用推送消息 这里推送的群 id 是要自己 api [/appchat/create] 创建的
 router.post(`/appchat/send`, async (ctx, next) => {
@@ -131,7 +128,7 @@ router.post(`/appchat/send`, async (ctx, next) => {
     json: true
   });
   console.log(data, '1111111111111111111');
-  ctx.success(data)
+  ctx.success(data);
 });
 
 export default router.routes();

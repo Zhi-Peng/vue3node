@@ -8,7 +8,8 @@ const userSchema = new Schema({
   email: String,
   password: String,
   phone: String,
-  token: String
+  token: String,
+  roleType: Number
 });
 
 // userSchema.index({id: 1});

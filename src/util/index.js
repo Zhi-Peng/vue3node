@@ -1,10 +1,52 @@
+import winston from 'winston';
+import errCode from '../errorCode.js';
+
 export default {
-  $eatch(array, fn) {
-    let len = array.length;
-    while (len) {
-      len--;
-      fn(array[len]);
+  success(ctx, data, msg) {
+    if (typeof data === 'string') {
+      msg = data;
+      data = undefined;
     }
+
+    ctx.body = {
+      msg,
+      data,
+      code: 200
+    };
+  },
+
+  // 这里的钷误是业务错误可以控制也可以不报错
+  fail(ctx, msg, code) {
+    if (code && !errCode[code]) {
+      throw new Error('未设置的错误');
+    }
+
+    ctx.body = {
+      msg,
+      code: code || 0
+    };
+  },
+
+  logger(options) {
+    return winston.createLogger({
+      level: options.level || 'info',
+      format: winston.format.json(),
+      defaultMeta: { service: options.service || 'user-service' },
+      transports: [
+        new winston.transports.File({ filename: 'error.log', level: 'error' }),
+        new winston.transports.File({ filename: 'combined.log' })
+      ]
+    });
+  },
+  // 验证字段有没有
+  validField(fields, body) {
+    fields.every(field => {
+      if (!body[field]) {
+        console.log(field, 6666);
+        throw new Error(`${field} 字段不能为空`);
+      }
+      return body[field];
+    });
   },
 
   $getClientIP(ctx) {

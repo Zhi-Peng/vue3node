@@ -93,7 +93,6 @@ router.post(`/message/send`, async (ctx, next) => {
     body: ctx.request.body,
     json: true
   });
-  console.log(data, 'dddddddddddddd');
   ctx.success(data)
 });
 

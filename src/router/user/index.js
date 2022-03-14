@@ -6,7 +6,7 @@ const router = new Router();
 
 router.get('/', async ctx => {
   const users = await userSchema.find().exec();
-  users ? ctx.success(users) : ctx.fail('获取用户失败');
+  users ? ctx.$util.success(ctx, users) : ctx.$util.fail(ctx, '获取用户失败');
 });
 
 // 登录
@@ -15,19 +15,20 @@ router.post('/', async ctx => {
   const validField = ['email', 'password'];
 
   try {
-    ctx.validField(validField, body);
+    ctx.$util.validField(validField, body);
 
     const user = await userSchema.findOne({ email: body.email });
     if (!user) {
-      return ctx.fail('此账号没有注册');
+      return ctx.$util.fail(ctx, '此账号没有注册');
     }
     if (body.password !== user.password) {
-      return ctx.fail('密码错误');
+      return ctx.$util.fail(ctx, '密码错误');
     }
 
-    ctx.success(user);
+    ctx.$util.success(ctx, user);
   } catch (err) {
-    ctx.fail(err.message);
+    console.log(err.message, 6666);
+    ctx.$util.fail(ctx, err.message);
   }
 });
 
