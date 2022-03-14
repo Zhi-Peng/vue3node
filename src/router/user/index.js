@@ -12,17 +12,17 @@ router.get('/', async ctx => {
 // 登录
 router.post('/', async ctx => {
   const body = ctx.request.body;
-  const validField = ['name', 'password'];
+  const validField = ['email', 'password'];
 
   try {
     ctx.validField(validField, body);
 
-    const user = await userSchema.findOne({ name: body.name });
+    const user = await userSchema.findOne({ email: body.email });
     if (!user) {
-      return ctx.success('此账号没有注册');
+      return ctx.fail('此账号没有注册');
     }
     if (body.password !== user.password) {
-      return ctx.success('密码错误');
+      return ctx.fail('密码错误');
     }
 
     ctx.success(user);
@@ -41,11 +41,12 @@ router.post('/register', async ctx => {
     const emailInfo = await emailSchema.findOne({ email: body.email });
 
     if (emailInfo && emailInfo.code === body.code) {
-      const user = await userSchema.findOne({ name: body.name });
+      const user = await userSchema.findOne({ email: body.email });
 
-      if (user && user.name === body.name) {
-        return ctx.fail('此用户名已注册');
+      if (user && user.email === body.email) {
+        return ctx.fail('此用户已注册');
       }
+      // 清空验证码
       await emailSchema.updateOne({ email: body.email }, { code: '' });
 
       const data = {

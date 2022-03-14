@@ -77,6 +77,10 @@ app.use(async (ctx, next) => {
     console.log(err, '路由里面 try catch 捕获错误');
   }
 });
+app.use(async (ctx, next) => {
+  console.log(33333);
+  await next();
+})
 app.use(router.routes());
 app.use(router.allowedMethods());
 app.on('error', (err, ctx) => {
