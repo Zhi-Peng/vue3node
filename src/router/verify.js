@@ -3,6 +3,7 @@ import config from '../config/index.js';
 
 const urls = {
   '/user': { roleType: 1, methods: ['get'] },
+  '/emailVerify': { roleType: 0 },
   register: { roleType: 0 },
   retrieve: { roleType: 0 },
   findPassword: { roleType: 0 },
@@ -18,7 +19,7 @@ const verify = ctx => {
       resolve({});
     } else {
       jwt.verify(ctx.request.header.token, config.JWTs.secret, (err, decoded) => {
-        console.log(err, decoded, 666);
+        console.log(err, decoded, '-----token');
         if (err) {
           return resolve('token 验证失败');
         } else if (!decoded.roleType || decoded.roleType > role.roleType) {

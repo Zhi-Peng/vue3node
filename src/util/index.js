@@ -17,6 +17,7 @@ export default {
 
   // 这里的钷误是业务错误可以控制也可以不报错
   fail(ctx, msg, code) {
+    console.log(msg, 77777);
     if (code && !errCode[code]) {
       throw new Error('未设置的错误');
     }
@@ -42,7 +43,6 @@ export default {
   validField(fields, body) {
     fields.every(field => {
       if (!body[field]) {
-        console.log(field, 6666);
         throw new Error(`${field} 字段不能为空`);
       }
       return body[field];

@@ -31,7 +31,7 @@ router.use(checkIp);
 // TODO 忘记密码
 router.get('/checkIp', async ctx => {
   console.log(ctx.$util.$getClientIP(ctx), 66666);
-  ctx.success('fdsaf');
+  ctx.$util.success('fdsaf');
 });
 
 router.post('/upload', async ctx => {
@@ -47,11 +47,11 @@ router.post('/upload', async ctx => {
     'type'
   ];
   try {
-    ctx.validField(validField, body);
+    ctx.$util.validField(validField, body);
 
-    ctx.success(body);
+    ctx.$util.success(body);
   } catch (err) {
-    ctx.fail(err.message);
+    ctx.$util.fail(err.message);
   }
 });
 export default router.routes();

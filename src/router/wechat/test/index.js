@@ -21,9 +21,9 @@ router.get('/allMemberTest', async (ctx, next) => {
   try {
     // TODU 这里要优化， 重复的数据插入不了   ordered = false 就是让插入过的不再插入
     const res = await memberList.insertMany(data.userlist, { ordered: false });
-    ctx.success(res);
+    ctx.$util.success(res);
   } catch (err) {
-    ctx.success(err);
+    ctx.$util.success(err);
   }
 });
 
@@ -37,9 +37,9 @@ router.get('/department', async (ctx, next) => {
   try {
     // TODU 这里要优化， 重复的数据插入不了
     const res = await memberList.insertMany(data.userlist, { ordered: false });
-    ctx.success(res);
+    ctx.$util.success(res);
   } catch (err) {
-    ctx.success(err);
+    ctx.$util.success(err);
   }
 });
 
@@ -56,9 +56,9 @@ router.get('/departmentlist', async (ctx, next) => {
   try {
     // TODU 这里要优化， 重复的数据插入不了
     const res = await departmentList.insertMany(data.department);
-    ctx.success(res);
+    ctx.$util.success(res);
   } catch (err) {
-    ctx.success(err);
+    ctx.$util.success(err);
   }
 });
 
@@ -75,9 +75,9 @@ router.get('/taglist', async (ctx, next) => {
   try {
     // TODU 这里要优化， 重复的数据插入不了
     const res = await memberTags.insertMany(data.taglist);
-    ctx.success(res);
+    ctx.$util.success(res);
   } catch (err) {
-    ctx.success(err);
+    ctx.$util.success(err);
   }
 });
 
@@ -96,9 +96,9 @@ router.get('/tag/:tagid', async (ctx, next) => {
   try {
     // TODU 这里要优化， 重复的数据插入不了
     const res = await tagMemberList.update({ _id: data._id }, data, { upsert: true });
-    ctx.success(res);
+    ctx.$util.success(res);
   } catch (err) {
-    ctx.success(err);
+    ctx.$util.success(err);
   }
 });
 
@@ -119,9 +119,9 @@ router.get('/externalcontact/:userid', async (ctx, next) => {
   try {
     // TODU 这里要优化， 重复的数据插入不了
     const res = await customerList.create(data);
-    ctx.success(res);
+    ctx.$util.success(res);
   } catch (err) {
-    ctx.success(err);
+    ctx.$util.success(err);
   }
 });
 
@@ -165,9 +165,9 @@ router.get('/allCustomerDetail', async (ctx, next) => {
   try {
     // TODU 这里要优化， 重复的数据插入不了
     const res = await customerDetails.insertMany(data, { ordered: false });
-    ctx.success(res);
+    ctx.$util.success(res);
   } catch (err) {
-    ctx.success(err);
+    ctx.$util.success(err);
   }
 });
 
@@ -180,7 +180,7 @@ router.get('/customerDetail/:externalUserid', async (ctx, next) => {
   });
 
   const res = await customerDetails.updateOne({ _id: externalUserid }, data, { upsert: true });
-  ctx.success(res);
+  ctx.$util.success(res);
 });
 
 // 同步所有客户群详情
@@ -217,7 +217,7 @@ router.get('/customerGroupDetail', async (ctx, next) => {
   });
 
   const res = await customerGroupDetails.insertMany(data, { ordered: false });
-  ctx.success(res);
+  ctx.$util.success(res);
 });
 
 // 同步客户群详情
@@ -236,7 +236,7 @@ router.get('/customerGroupDetail/:chatId', async (ctx, next) => {
   const res = await customerGroupDetails.updateOne({ _id: chat_id }, data.group_chat, {
     upsert: true
   });
-  ctx.success(res);
+  ctx.$util.success(res);
 });
 
 // 获取企业标签库
@@ -252,9 +252,9 @@ router.post('/customerCorpTags', async (ctx, next) => {
 
   try {
     const res = await customerCorpTags.insertMany(data.tag_group, { ordered: false });
-    ctx.success(res);
+    ctx.$util.success(res);
   } catch (err) {
-    ctx.success(err);
+    ctx.$util.success(err);
   }
 });
 router.post('/ddddd', async ctx => {
@@ -323,10 +323,10 @@ router.post('/customerCorpTagsUpdate', async (ctx, next) => {
       { group_id: item.group_id },
       { $set: { tag: res[0]['ddddd'][0].tag } }
     );
-    ctx.success(res);
+    ctx.$util.success(res);
   } catch (err) {
     console.log(err, 'errrrrrrrrr');
-    ctx.success(err);
+    ctx.$util.success(err);
   }
 });
 
@@ -348,9 +348,9 @@ router.post('/memberQrCode', async (ctx, next) => {
 
   try {
     const res = await memberQrCode.create(data);
-    ctx.success(res);
+    ctx.$util.success(res);
   } catch (err) {
-    ctx.success(err);
+    ctx.$util.success(err);
   }
 });
 export default router.routes();

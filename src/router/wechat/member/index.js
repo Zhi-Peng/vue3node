@@ -5,28 +5,31 @@ const router = new Router();
 // 获取所有成员详情
 router.get('/', async (ctx, next) => {
   const data = await memberList.find();
-  ctx.success(data);
+  ctx.$util.success(data);
 });
 
 // 获取单个成员详情
 router.get('/:userid', async (ctx, next) => {
   const userid = ctx.request.params.userid;
-  const data = await memberList.findOne({userid});
-  ctx.success(data);
+  const data = await memberList.findOne({ userid });
+  ctx.$util.success(data);
 });
 
 // 获取部门成员简单列表
 router.get('/simplelist/:departmentId', async (ctx, next) => {
   const departmentId = ctx.request.params.departmentId;
-  const data = await memberList.find({department: {$elemMatch: { $eq: departmentId }}}, 'userid name department open_userid');
-  ctx.success(data);
+  const data = await memberList.find(
+    { department: { $elemMatch: { $eq: departmentId } } },
+    'userid name department open_userid'
+  );
+  ctx.$util.success(data);
 });
 
 // 获取部门成员详情列表
 router.get('/detaillist/:departmentId', async (ctx, next) => {
   const departmentId = ctx.request.params.departmentId;
-  const data = await memberList.find({department: {$elemMatch: { $eq: departmentId }}});
-  ctx.success(data);
+  const data = await memberList.find({ department: { $elemMatch: { $eq: departmentId } } });
+  ctx.$util.success(data);
 });
 
 /**
@@ -38,4 +41,3 @@ router.get('/detaillist/:departmentId', async (ctx, next) => {
  * userid 与 openid 互换 这个 api 要特殊条件,具体看 api 文档
  */
 export default router.routes();
-

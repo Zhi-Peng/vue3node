@@ -5,14 +5,14 @@ const router = new Router();
 
 // 获取标签列表
 router.get('/', async (ctx, next) => {
-  const data = await memberTags.find({}, {_id: 0, __v: 0});
-  ctx.success(data);
+  const data = await memberTags.find({}, { _id: 0, __v: 0 });
+  ctx.$util.success(data);
 });
 
 // 获取标签列表
 router.get('/members', async (ctx, next) => {
-  const data = await tagMemberList.find({}, {_id: 0, __v: 0});
-  ctx.success(data);
+  const data = await tagMemberList.find({}, { _id: 0, __v: 0 });
+  ctx.$util.success(data);
 });
 
 // 获取标签成员

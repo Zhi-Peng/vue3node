@@ -17,7 +17,7 @@ router.post('/', async ctx => {
   try {
     ctx.$util.validField(validField, body);
 
-    const user = await userSchema.findOne({ email: body.email });
+    let user = await userSchema.findOne({ email: body.email });
     if (!user) {
       return ctx.$util.fail(ctx, '此账号没有注册');
     }
@@ -25,9 +25,12 @@ router.post('/', async ctx => {
       return ctx.$util.fail(ctx, '密码错误');
     }
 
+    user = user.toJSON();
+    user.token = jwt.sign({ ...user }, ctx.$config.JWTs.secret, {
+      expiresIn: ctx.$config.JWTs.expiresIn
+    });
     ctx.$util.success(ctx, user);
   } catch (err) {
-    console.log(err.message, 6666);
     ctx.$util.fail(ctx, err.message);
   }
 });
@@ -38,29 +41,24 @@ router.post('/register', async ctx => {
   const validField = ['password', 'email', 'code'];
 
   try {
-    ctx.validField(validField, body);
+    ctx.$util.validField(validField, body);
     const emailInfo = await emailSchema.findOne({ email: body.email });
 
     if (emailInfo && emailInfo.code === body.code) {
       const user = await userSchema.findOne({ email: body.email });
 
       if (user && user.email === body.email) {
-        return ctx.fail('此用户已注册');
+        return ctx.$util.fail(ctx, '此用户已注册');
       }
       // 清空验证码
       await emailSchema.updateOne({ email: body.email }, { code: '' });
-
-      const data = {
-        ...body,
-        token: jwt.sign(body, ctx.$config.JWTs.secret, { expiresIn: ctx.$config.JWTs.expiresIn })
-      };
-      const users = await userSchema.create(data);
-      ctx.success(users);
+      await userSchema.create(body);
+      ctx.$util.success(ctx);
     } else {
-      ctx.fail('请填入正确的验正码');
+      ctx.$util.fail(ctx, '请填入正确的验正码');
     }
   } catch (err) {
-    ctx.fail(err.message);
+    ctx.$util.fail(ctx, err.message);
   }
 });
 
@@ -71,21 +69,21 @@ router.post('/forget', async ctx => {
   const emailInfo = await emailSchema.findOne({ email: body.email });
 
   try {
-    ctx.validField(validField, body);
+    ctx.$util.validField(validField, body);
     if (emailInfo && emailInfo.code === body.code) {
       const user = await userSchema.findOne({ email: body.email });
       if (user) {
         await emailSchema.updateOne({ email: body.email }, { code: '' });
         await userSchema.updateOne({ email: body.email }, { password: body.password });
-        ctx.success('修改密码成功');
+        ctx.$util.success(ctx, '修改密码成功');
       } else {
-        return ctx.fail('没有此用户');
+        return ctx.$util.fail(ctx, '没有此用户');
       }
     } else {
-      ctx.fail('请填入正确的验正码');
+      ctx.$util.fail(ctx, '请填入正确的验正码');
     }
   } catch (err) {
-    ctx.fail(err.message);
+    ctx.$util.fail(ctx, err.message);
   }
 });
 
@@ -95,7 +93,7 @@ router.post('/forget', async ctx => {
 //   const validField = ['name', 'password', 'newPassword'];
 
 //   try {
-//     ctx.validField(validField, body);
+//     ctx.$util.validField(validField, body);
 //     const user = await userSchema.updateOne(
 //       { name: body.name },
 //       { password: body.password }
@@ -103,15 +101,15 @@ router.post('/forget', async ctx => {
 //     // const user = await userSchema.findOne({ name: body.name });
 //     console.log(user, 'user');
 //     if (!user) {
-//       return ctx.success('账号或密码不正确');
+//       return ctx.$util.success(ctx, '账号或密码不正确');
 //     }
 //     if (user.password !== body.password) {
-//       return ctx.success('原密码不正确');
+//       return ctx.$util.success(ctx, '原密码不正确');
 //     }
 //     await user.update({ password: body.newPassword });
-//     ctx.success('修改密码成功');
+//     ctx.$util.success(ctx, '修改密码成功');
 //   } catch (err) {
-//     ctx.fail(err.message);
+//     ctx.$util.fail(ctx, err.message);
 //   }
 // });
 
@@ -122,9 +120,9 @@ router.post('/forget', async ctx => {
 //   try {
 //     const data = await ctx.verify(ctx);
 //     await userSchema.deleteOne({ name: data.name });
-//     ctx.success('退出成功');
+//     ctx.$util.success(ctx, '退出成功');
 //   } catch (err) {
-//     ctx.fail(err.message);
+//     ctx.$util.fail(ctx, err.message);
 //   }
 // });
 

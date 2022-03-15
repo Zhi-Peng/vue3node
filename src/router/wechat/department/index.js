@@ -3,10 +3,10 @@ import departmentList from '../../../models/department/index.js';
 const router = new Router();
 // 获取所有部门
 router.get('/', async (ctx, next) => {
-  const data = await departmentList.find({}, {_id: 0, __v: 0});
-  console.log(data, 'bbbbbbbbbbbbbbbb')
-  
-  ctx.success(data);
+  const data = await departmentList.find({}, { _id: 0, __v: 0 });
+  console.log(data, 'bbbbbbbbbbbbbbbb');
+
+  ctx.$util.success(data);
 });
 
 /**
@@ -16,4 +16,3 @@ router.get('/', async (ctx, next) => {
  * 删除部门
  */
 export default router.routes();
-

@@ -14,8 +14,9 @@ app.context.$config = config;
 app.use(bodyparser());
 app.use(async (ctx, next) => {
   const roleValid = await verify(ctx);
+  console.log(roleValid, 111111);
   if (typeof roleValid === 'string') {
-    ctx.$util.fail(ctx, roleValid);
+    util.fail(ctx, roleValid);
   }
   await next();
 });

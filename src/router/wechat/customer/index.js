@@ -5,6 +5,6 @@ const router = new Router();
 
 router.get('/', async (ctx, next) => {
   const data = await customerDetails.find();
-  ctx.success(data);
+  ctx.$util.success(data);
 });
 export default router.routes();
