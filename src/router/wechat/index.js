@@ -127,7 +127,6 @@ router.post(`/appchat/send`, async (ctx, next) => {
     body: ctx.request.body,
     json: true
   });
-  console.log(data, '1111111111111111111');
   ctx.$util.success(data);
 });
 

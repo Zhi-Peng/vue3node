@@ -17,7 +17,6 @@ export default {
 
   // 这里的钷误是业务错误可以控制也可以不报错
   fail(ctx, msg, code) {
-    console.log(msg, 77777);
     if (code && !errCode[code]) {
       throw new Error('未设置的错误');
     }
